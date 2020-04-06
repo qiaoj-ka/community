@@ -1,0 +1,45 @@
+package com.fehead.community.entities;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import java.io.Serializable;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author ktoking
+ * @since 2020-04-03
+ */
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+public class User implements Serializable {
+
+    private static final long serialVersionUID=1L;
+
+      @TableId(value = "user_id", type = IdType.AUTO)
+    private Integer userId;
+
+    private String userName;
+
+    private Boolean userGender;
+
+    private String userInstitute;
+
+    private String userClass;
+
+    private String userPhone;
+
+    private String userStudentNumber;
+
+    private String userOpenid;
+
+    private String userAvatar;
+
+
+}
