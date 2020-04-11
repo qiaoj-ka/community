@@ -2,6 +2,11 @@ package com.fehead.community.service;
 
 import com.fehead.community.entities.Activity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fehead.community.entities.User;
+import com.fehead.community.error.BusinessException;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * <p>
@@ -13,4 +18,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IActivityService extends IService<Activity> {
 
+    public void publishNewActivity(Activity activity);
+
+     public Object uploadPicture(MultipartFile uploadFile) throws BusinessException, JSchException, SftpException;
 }
