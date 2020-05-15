@@ -1,7 +1,9 @@
 package com.fehead.community.service;
 
-import com.fehead.community.entities.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fehead.community.entities.User;
+import com.fehead.community.error.BusinessException;
+import com.fehead.community.view.UserVO;
 
 /**
  * <p>
@@ -13,4 +15,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IUserService extends IService<User> {
     public void insert(User user);
+    public Integer userLogin(User user);
+    public User selectUser(String openId);
+    public UserVO selectUserVO(User user);
+    public Integer updateUser(User user);
+    public Integer updateUserByUserId(User user);
+    User selectUserById(Integer userId) throws BusinessException;
 }

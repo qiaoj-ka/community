@@ -3,18 +3,27 @@ package com.fehead.community.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fehead.community.entities.Activity;
 import com.fehead.community.error.BusinessException;
+import com.fehead.community.model.ActivityModel;
+import com.fehead.community.response.CommonReturnType;
 import com.fehead.community.service.IActivityService;
+import com.fehead.community.service.IActivityUserService;
+import com.fehead.community.view.ActivityVO;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,10 +39,13 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-public class ActivityController {
+public class ActivityController extends BaseController{
 
     @Resource
     private IActivityService iActivityService;
+    @Resource
+    private IActivityUserService iActivityUserService;
+
     /**
      * 可上传图片、视频，只需在nginx配置中配置可识别的后缀
      */
@@ -66,9 +78,63 @@ public class ActivityController {
         return map;
     }
 
+    //上传活动
+    @PostMapping(value = "/publish/activity")
+    public CommonReturnType createActivity(@RequestParam(value = "activityName")String activityName,
+                                           @RequestParam(value = "activityDescribe")String activityDescribe,
+                                           @RequestParam(value = "activityReward")String activityReward,
+                                           @RequestParam(value = "activityPosition")String activityPosition,
+                                           @RequestParam(value = "activityPeople")Integer activityPeople,
+                                           @RequestParam(value = "activityStarttime")Long activityStarttime,
+                                           @RequestParam(value = "activityEndtime")Long activityEndtime,
+                                           @RequestParam(value = "activityCover")MultipartFile activityCover,
+                                           @RequestParam(value = "activityCreater_id")Integer activityCreaterId,
+                                           @RequestParam(value = "clubId")Integer clubId) throws JsonProcessingException, BusinessException, JSchException, SftpException {
+        Object result = iActivityService.uploadPicture(activityCover);
+        String cover = new ObjectMapper().writeValueAsString(result);
+        LocalDateTime time1=LocalDateTime.ofEpochSecond(activityStarttime/1000,0, ZoneOffset.ofHours(8));
+        LocalDateTime time2=LocalDateTime.ofEpochSecond(activityEndtime/1000,0,ZoneOffset.ofHours(8));
+        Activity activity=new Activity(null,activityName,time1,time2,activityDescribe,activityReward,activityPeople,clubId,0,activityCreaterId,cover,activityPosition);
+        iActivityService.publishNewActivity(activity);
+        return CommonReturnType.creat("success");
+    }
+
+    //获取活动详情
+    @GetMapping("/get/activity")
+    public CommonReturnType getActivity(@RequestParam(value = "activityId")Integer activityId,
+                                        @RequestParam(value = "userId")Integer userId) throws BusinessException {
+        ActivityVO activityVO=iActivityService.showActivity(activityId);
+        Integer count=iActivityUserService.getActivityNumber(activityId);
+        activityVO.setActivityNumber(count);//获取人数
+        Integer state=iActivityUserService.getState(activityId,userId);
+        activityVO.setActivityStatus(state); //人是否加入这个活动
+        return CommonReturnType.creat(activityVO);
+    }
+    //分页获取活动(简介)
+    @GetMapping(value = "/get/activity/byPage")
+    public CommonReturnType getActivityByPage(@RequestParam(value = "page")Integer page) throws BusinessException {
+        List<ActivityModel> activityModels=iActivityService.getAcitivity(page);
+        return CommonReturnType.creat(activityModels);
+    }
+    //模糊查询活动
+    @GetMapping(value = "/search/activity")
+    public CommonReturnType searchActivity(@RequestParam(value = "name") String name) throws BusinessException {
+        List<ActivityModel> activityModels=iActivityService.searchActivity(name);
+        return CommonReturnType.creat(activityModels);
+    }
+
+    //查找已经参加的活动
+    @GetMapping(value = "get/myActivity")
+    public CommonReturnType getMyActivity(@RequestParam(value = "userId")Integer userId,
+                                          @RequestParam(value = "state")Integer state) throws BusinessException {
+        List<ActivityModel> activityModels=iActivityService.myActivity(userId,state);
+        return CommonReturnType.creat(activityModels);
+    }
+
+    //测试
     @GetMapping(value = "/hello")
     public String hello(){
-        return "hello";
+        return "hello world";
     }
 }
 

@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     name: songs
-    url: jdbc:mysql://39.96.86.4:3308/community?characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://39.96.86.4:3308/community?characterEncoding=utf-8&useSSL=false&serverTimezone=Hongkong
     #    url: jdbc:p6spy:mysql://localhost:3306/songs?characterEncoding=utf-8&useSSL=false
     username: root
     password: kaikai
@@ -13,9 +13,9 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
     database: 0 # Redis数据库索引（默认为0）
-    host: 39.96.86.4 # Redis的服务地址
+    host: 59.110.158.93 # Redis的服务地址
     port: 6379 # Redis的服务端口
-    password:
+    password: kaikaikai
     jedis:
       pool:
         max-active: 8 # 连接池最大连接数（使用负值表示没有限制）
@@ -27,7 +27,7 @@ spring:
 logging:
   level:
     root: warn
-    com.fehead.songs.dao: trace
+    com.fehead.community.mapper: trace
   pattern:
     console: '%p%m%n'
 

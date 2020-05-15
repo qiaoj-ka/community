@@ -2,12 +2,13 @@ package com.fehead.community.entities;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -50,5 +51,18 @@ public class Activity implements Serializable {
 
     private String activityPosition;
 
-
+    public Activity(Integer activityId, String activityName, LocalDateTime activityStarttime, LocalDateTime activityEndtime, String activityDescribe, String activityReward, Integer activityPeople, Integer clubId, Integer activityStatus, Integer activityCreaterId, String activityCover, String activityPosition) {
+        this.activityId = activityId;
+        this.activityName = activityName;
+        this.activityStarttime = activityStarttime;
+        this.activityEndtime = activityEndtime;
+        this.activityDescribe = activityDescribe;
+        this.activityReward = activityReward;
+        this.activityPeople = activityPeople;
+        this.clubId = clubId;
+        this.activityStatus = activityStatus;
+        this.activityCreaterId = activityCreaterId;
+        this.activityCover = activityCover;
+        this.activityPosition = activityPosition;
+    }
 }

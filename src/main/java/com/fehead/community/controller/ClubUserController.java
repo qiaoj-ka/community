@@ -1,10 +1,12 @@
 package com.fehead.community.controller;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.fehead.community.error.BusinessException;
+import com.fehead.community.response.CommonReturnType;
+import com.fehead.community.service.IClubUserService;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RestController;
+import javax.annotation.Resource;
 
 /**
  * <p>
@@ -15,8 +17,29 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2020-04-03
  */
 @RestController
-@RequestMapping("/clubUser")
-public class ClubUserController  extends BaseController{
+public class ClubUserController extends BaseController{
+
+    @Resource
+    private IClubUserService clubUserService;
+    //加入社团
+    @PostMapping(value = "/add/club")
+    public CommonReturnType addClub(@RequestParam(value = "userId")Integer userId,
+                                    @RequestParam(value = "clubId")Integer clubId) throws BusinessException {
+        clubUserService.addClub(userId,clubId);
+        return CommonReturnType.creat("success");
+    }
+
+    //退出社团
+    @DeleteMapping(value = "/quit/club")
+    public CommonReturnType quitClub(@RequestParam(value = "userId")Integer userId,@RequestParam(value = "clubId")Integer clubId) throws BusinessException {
+       return CommonReturnType.creat(clubUserService.quiteClub(userId, clubId));
+    }
+
+
+    @GetMapping(value = "/hahhahh")
+    public String gethahah(){
+        return "hahahah";
+    }
 
 }
 

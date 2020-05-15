@@ -56,7 +56,5 @@ public class GeneratorMybatisPlus {
         mpg.execute();
 
 
-
-
     }
 }

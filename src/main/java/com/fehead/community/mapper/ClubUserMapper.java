@@ -1,7 +1,7 @@
 package com.fehead.community.mapper;
 
-import com.fehead.community.entities.ClubUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.fehead.community.entities.ClubUser;
 
 /**
  * <p>
@@ -12,5 +12,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2020-04-03
  */
 public interface ClubUserMapper extends BaseMapper<ClubUser> {
-
+        //IPage<ClubUser>
 }

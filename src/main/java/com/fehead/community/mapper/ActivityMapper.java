@@ -1,7 +1,10 @@
 package com.fehead.community.mapper;
 
-import com.fehead.community.entities.Activity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.fehead.community.entities.Activity;
+import org.springframework.data.domain.Page;
+
 
 /**
  * <p>
@@ -12,5 +15,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2020-04-04
  */
 public interface ActivityMapper extends BaseMapper<Activity> {
+    IPage<Activity> selectPage(Page<?>page);
 
 }

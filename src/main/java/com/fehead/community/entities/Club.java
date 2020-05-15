@@ -1,13 +1,16 @@
 package com.fehead.community.entities;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -20,11 +23,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
+@ToString
 public class Club implements Serializable {
 
     private static final long serialVersionUID=1L;
 
-      @TableId(value = "club_id", type = IdType.AUTO)
+    @TableId(value = "club_id", type = IdType.AUTO)
     private Integer clubId;
 
     private String clubName;
@@ -43,6 +47,9 @@ public class Club implements Serializable {
     private Integer clubStatus;
 
     private Integer clubCreaterId;
+
+    @TableField(value = "club_qq",exist = true)
+    private String clubQQ;
 
 
 }
