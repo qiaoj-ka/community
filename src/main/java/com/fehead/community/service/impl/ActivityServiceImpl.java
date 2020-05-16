@@ -2,6 +2,8 @@ package com.fehead.community.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -116,6 +118,13 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
             queryWrapper.select("club_name").eq("club_id",activity.getClubId());
             Club club=clubMapper.selectOne(queryWrapper);
             activityVO=tansferVO(activity,user,club);
+            String hotkey=activity.getActivityId()+"hot";
+            if(!redisUtil.hasKey(hotkey)){
+                redisUtil.set(hotkey,1);
+            }else {
+                redisUtil.incr(hotkey,1);
+                activityVO.setHot(Integer.parseInt(redisUtil.get(hotkey).toString()));
+            }
         }catch (Exception e){
             log.info("活动获取失败");
             throw new BusinessException(EmBusinessError.DATA_SELECT_ERROR,"活动获取失败");
@@ -129,11 +138,12 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         List<ActivityModel> list=new ArrayList<>();
         try {
             QueryWrapper queryWrapper1=new QueryWrapper();
-            queryWrapper1.select("*");
+            queryWrapper1.select("*").ne("activity_status",1);
             Page<Activity> page1=new Page<>(page,1);
             IPage<Activity> iPage= activityMapper.selectPage(page1,queryWrapper1);
             List<Activity> activities=iPage.getRecords();
-            list=getAcitivityModelList(activities);
+            //需要判断是否过期，只返回不过期的
+            list=getAcitivityModelList(activities,1);
         }catch (Exception e){
             log.info("获取活动失败");
             throw new BusinessException(EmBusinessError.DATA_SELECT_ERROR,"活动获取失败");
@@ -141,17 +151,33 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         return list;
     }
 
-    private List<ActivityModel> getAcitivityModelList(List<Activity> activities){
+    /**
+     *
+     * @param activities 传入需要转换的list
+     * @param status 传入状态 0 代表不需要判断过期时间，1代表需要判断过期时间
+     * @return
+     */
+    private List<ActivityModel> getAcitivityModelList(List<Activity> activities,Integer status){
         List<ActivityModel> list=new ArrayList<>();
         for (Activity act:activities){
             QueryWrapper<User> queryWrapper=new QueryWrapper<>();
             queryWrapper.select("user_avatar","user_name").eq("user_id",act.getActivityCreaterId());
             User user=userMapper.selectOne(queryWrapper);
             ActivityModel activityModel=transforActivityToModel(act,user);
-            if(activityModel!=null) list.add(activityModel);
+            Duration duration=Duration.between(LocalDateTime.now(),act.getActivityEndtime());
+            //判断其是否过期，如果过期将数据库字段修改为1 表示删除或者过期
+            if(duration.toMillis()<0&&status==1){
+                LambdaUpdateWrapper<Activity> updateWrapper=new UpdateWrapper().lambda();
+                updateWrapper.eq(Activity::getActivityId,act.getActivityId());
+                act.setActivityStatus(1);
+                activityMapper.update(act,updateWrapper);
+            }else if(activityModel!=null) {
+                list.add(activityModel);
+            }
         }
         return list;
     }
+    //模糊查询，活动过期的不返回
     @Override
     public List<ActivityModel> searchActivity(String name) throws BusinessException {
         List<ActivityModel> list=new ArrayList<>();
@@ -159,7 +185,8 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
              LambdaQueryWrapper<Activity> queryWrapper=new QueryWrapper().lambda();
              queryWrapper.like(Activity::getActivityName,name);
              List<Activity> activities=activityMapper.selectList(queryWrapper);
-             list=getAcitivityModelList(activities);
+             //获取未过期的活动列表
+             list=getAcitivityModelList(activities,1);
         }catch (Exception e){
              throw new BusinessException(EmBusinessError.DATA_SELECT_ERROR,"未找到活动，查询失败");
         }
@@ -191,9 +218,10 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
                     activities2.add(activity);
                 }
             }
-            if(state==0)list=getAcitivityModelList(activities);
-            if(state==1)list=getAcitivityModelList(activities1);
-            if(state==2)list=getAcitivityModelList(activities2);
+            //这里全部返回 不考虑是否过期
+            if(state==0)list=getAcitivityModelList(activities,0);
+            if(state==1)list=getAcitivityModelList(activities1,0);
+            if(state==2)list=getAcitivityModelList(activities2,0);
         }catch (Exception e){
             log.info("获取活动失败");
             throw new BusinessException(EmBusinessError.DATA_SELECT_ERROR,"活动获取失败");
@@ -201,13 +229,15 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         return list;
     }
 
+    //进入社团首页，获取的所有活动，展示未过期的所有活动
     @Override
     public List<ActivityModel> getAllActivityByClubId(Integer clubId) {
         //通过clubId查找该社团下的所有活动
         LambdaQueryWrapper<Activity> queryWrapper=new QueryWrapper().lambda();
         queryWrapper.eq(Activity::getClubId,clubId);
         List<Activity> activities=activityMapper.selectList(queryWrapper);
-        List<ActivityModel> activityModels=getAcitivityModelList(activities);
+        //现实未过期的所有活动
+        List<ActivityModel> activityModels=getAcitivityModelList(activities,1);
         return activityModels;
     }
 
@@ -248,11 +278,11 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         }else {
             activityModel.setTime((timestap-time)/(60*60*24)+"天前");
         }
+        //获取hot值
         String hotkey=activity.getActivityId()+"hot";
         if(!redisUtil.hasKey(hotkey)){
-            redisUtil.set(hotkey,1);
+            redisUtil.set(hotkey,0);
         }else {
-            redisUtil.incr(hotkey,1);
             activityModel.setHot(Integer.parseInt(redisUtil.get(hotkey).toString()));
         }
         return activityModel;

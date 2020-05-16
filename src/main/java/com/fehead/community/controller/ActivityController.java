@@ -107,7 +107,11 @@ public class ActivityController extends BaseController{
         Integer count=iActivityUserService.getActivityNumber(activityId);
         activityVO.setActivityNumber(count);//获取人数
         Integer state=iActivityUserService.getState(activityId,userId);
-        activityVO.setActivityStatus(state); //人是否加入这个活动
+        if(state==2){
+            activityVO.setAdd(true); //人是否加入这个活动
+        }else {
+            activityVO.setAdd(false);
+        }
         return CommonReturnType.creat(activityVO);
     }
     //分页获取活动(简介)

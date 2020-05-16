@@ -41,6 +41,7 @@ public class ActivityUserServiceImpl extends ServiceImpl<ActivityUserMapper, Act
         return count;
     }
 
+    //判断这个人是否参加过该活动，参加过返回2
     @Override
     public Integer getState(Integer activityId, Integer userId) {
         Integer state=0;
