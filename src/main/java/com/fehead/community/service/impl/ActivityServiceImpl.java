@@ -256,7 +256,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         activityVO.setActivityEndTime(endTime);
         activityVO.setUserName(user.getUserName());
         activityVO.setUserPhone(user.getUserPhone());
-        activityVO.setActivityPeople(activity.getActivityPeople()*100);
+        activityVO.setActivityPeople(activity.getActivityPeople());
         activityVO.setClubName(club.getClubName());
         return activityVO;
     }
@@ -269,6 +269,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         Long timestap=LocalDateTime.now().toInstant(ZoneOffset.of("+8")).getEpochSecond();
         Long time=activity.getActivityStarttime().toInstant(ZoneOffset.of("+8")).getEpochSecond();
         Long endtime=activity.getActivityEndtime().toInstant(ZoneOffset.of("+8")).getEpochSecond();
+        activityModel.setActivityEndtime(endtime);
         if(timestap-endtime>0){
             return null;
         }

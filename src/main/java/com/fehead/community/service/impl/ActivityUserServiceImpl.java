@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -112,6 +114,19 @@ public class ActivityUserServiceImpl extends ServiceImpl<ActivityUserMapper, Act
             throw new BusinessException(EmBusinessError.DATA_DELETE_ERROR,"未能删除成功");
         }
 
+    }
+
+    @Override
+    public List<ActivityUser> getActivityUser(Integer activityId) throws BusinessException {
+        List<ActivityUser> activityUsers=new ArrayList<>();
+        try {
+            LambdaQueryWrapper<ActivityUser> queryWrapper=new QueryWrapper().lambda();
+            queryWrapper.eq(ActivityUser::getActivityId,activityId);
+            activityUsers=activityUserMapper.selectList(queryWrapper);
+        }catch (Exception e){
+            throw new BusinessException(EmBusinessError.DATA_SELECT_ERROR,"查找参加活动人员失败");
+        }
+        return activityUsers;
     }
 
 }

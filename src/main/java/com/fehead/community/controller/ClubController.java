@@ -8,6 +8,7 @@ import com.fehead.community.entities.MethodTest;
 import com.fehead.community.entities.Test1;
 import com.fehead.community.error.BusinessException;
 import com.fehead.community.model.ActivityModel;
+import com.fehead.community.other.ClubType;
 import com.fehead.community.response.CommonReturnType;
 import com.fehead.community.service.IActivityService;
 import com.fehead.community.service.IClubService;
@@ -78,9 +79,20 @@ public class ClubController extends BaseController{
     }
 
 
-    //按照类型查找社团目录
-    @GetMapping(value = "club/getClubDemo")
-    public CommonReturnType getClubDemo(@RequestParam("type")String type){
+    //社团首页获取所有包含所有类型的
+    @GetMapping(value = "club/demo/allType")
+    public CommonReturnType getAllClub(){
+        List<MethodTest> list=new ArrayList<>();
+        for (ClubType type:ClubType.values()){
+            MethodTest methodTest=getClubDemo(type.toString());
+            list.add(methodTest);
+        }
+        return CommonReturnType.creat(list);
+    }
+
+//    //按照类型查找社团目录
+//    @GetMapping(value = "club/getClubDemo")
+    public MethodTest getClubDemo(String type){
         MethodTest methodTest=new MethodTest();
         methodTest.setText(type);
         List<Club> list=iClubService.getClub(type);
@@ -92,7 +104,7 @@ public class ClubController extends BaseController{
             list1.add(test1);
         }
         methodTest.setChildren(list1);
-        return CommonReturnType.creat(methodTest);
+        return methodTest;
     }
     //进入社团首页
     @GetMapping(value = "get/club/all/info")
