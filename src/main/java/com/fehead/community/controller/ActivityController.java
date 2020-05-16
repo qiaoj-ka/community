@@ -105,7 +105,7 @@ public class ActivityController extends BaseController{
                                         @RequestParam(value = "userId")Integer userId) throws BusinessException {
         ActivityVO activityVO=iActivityService.showActivity(activityId);
         Integer count=iActivityUserService.getActivityNumber(activityId);
-        activityVO.setActivityNumber(count);//获取人数
+        activityVO.setActivityNumber(activityVO.getActivityPeople()-count);//获取人数
         Integer state=iActivityUserService.getState(activityId,userId);
         if(state==2){
             activityVO.setAdd(true); //人是否加入这个活动

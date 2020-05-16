@@ -18,8 +18,7 @@ public class ActivityModel {
 
     private String activityCover;
 
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime activityEndtime;
+    private Long activityEndtime;
 
     private String userAvatar;
 

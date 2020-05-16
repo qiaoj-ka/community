@@ -78,6 +78,12 @@ public class ClubController extends BaseController{
     }
 
 
+//    //社团首页获取社团
+//    @GetMapping(value = "club/demo")
+//    public CommonReturnType getAllClub(){
+//
+//    }
+
     //按照类型查找社团目录
     @GetMapping(value = "club/getClubDemo")
     public CommonReturnType getClubDemo(@RequestParam("type")String type){

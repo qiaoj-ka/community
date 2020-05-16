@@ -3,21 +3,31 @@ package com.fehead.community.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fehead.community.entities.ActivityUser;
+import com.fehead.community.entities.Club;
 import com.fehead.community.entities.ClubUser;
 import com.fehead.community.entities.User;
 import com.fehead.community.error.BusinessException;
 import com.fehead.community.error.EmBusinessError;
 import com.fehead.community.response.CommonReturnType;
+import com.fehead.community.service.IActivityUserService;
 import com.fehead.community.service.IClubUserService;
 import com.fehead.community.service.IUserService;
+import com.fehead.community.utility.ExcelUtil;
 import com.fehead.community.utility.HttpClientUtil;
+import com.fehead.community.view.ClubVO1;
 import com.fehead.community.view.UserVO;
 import com.fehead.community.view.UserVO1;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +49,8 @@ public class UserController extends BaseController{
     private IUserService iUserService;
     @Resource
     private IClubUserService iClubUserService;
+    @Resource
+    private IActivityUserService iActivityUserService;
 
     //通过userId获取信息
     @GetMapping("/getUserInfo")
@@ -91,7 +103,78 @@ public class UserController extends BaseController{
         BeanUtils.copyProperties(user,userVO1);
         return userVO1;
     }
-
+    @Autowired
+    private ExcelUtil excelUtil;
+    //导出参加活动人员Excel
+    @GetMapping("/ExcelDownload/user/activity")
+    public void excelDownloadActivityUser(HttpServletResponse response,
+                                          Integer activityId,
+                                          String sheetName,
+                                          String fileName) throws BusinessException, IOException {
+        //表头数据
+        //表头数据
+        String[] header={"姓名","性别","学院","班级","电话"};
+        //获取所有参加活动人员并包装
+        List<ActivityUser> list=iActivityUserService.getActivityUser(activityId);
+        List<UserVO1> userVO1s=getAllUser(list);
+        List<List<String>> users=getUserStringList(userVO1s);
+        excelUtil.exportExcel(response,header,users,sheetName,fileName,15);
+    }
+   //通过所有参与活动的id获取用户
+    private List<UserVO1> getAllUser(List<ActivityUser> list) throws BusinessException {
+        List<UserVO1> userVO1s=new ArrayList<>();
+        //获取所有成员信息
+        for (ActivityUser cu:list){
+            User user=iUserService.selectUserById(cu.getUserId());
+            UserVO1 userVO1=transferToVO1(user);
+            userVO1s.add(userVO1);
+        }
+        return userVO1s;
+    }
+    //导出参加社团人员Excel
+    @GetMapping("/ExcelDownload/user/club")
+    public void excelDownload(HttpServletResponse response,
+                              Integer clubId,
+                              String sheetName,
+                              String fileName) throws BusinessException, IOException {
+        //表头数据
+        String[] header={"姓名","性别","学院","班级","电话"};
+        //获取所有成员信息list,并进行包装
+        List<UserVO1> list=getAllUser(clubId);
+        List<List<String>> users=getUserStringList(list);
+        excelUtil.exportExcel(response,header,users,sheetName,fileName,15);
+    }
+    //对于获取成员进行包装
+    private List<List<String>> getUserStringList(List<UserVO1> list){
+        List<List<String>> lists=new ArrayList<>();
+        for (UserVO1 user:list){
+            List<String> users=new ArrayList<>();
+            users.add(user.getUserName());
+            if(user.getUserGender()==0){
+                users.add("女");
+            }else {
+                users.add("男");
+            }
+            users.add(user.getUserInstitute());
+            users.add(user.getUserClass());
+            users.add(user.getUserPhone());
+            lists.add(users);
+        }
+        return lists;
+    }
+    //获取社团成员所有信息非分页
+    private List<UserVO1> getAllUser(Integer clubId) throws BusinessException {
+        List<ClubUser> list=iClubUserService.getClubUser(clubId);
+        List<UserVO1> userVO1s=new ArrayList<>();
+        //获取所有成员信息
+        for (ClubUser cu:list){
+            User user=iUserService.selectUserById(cu.getUserId());
+            UserVO1 userVO1=transferToVO1(user);
+            userVO1s.add(userVO1);
+        }
+        return userVO1s;
+    }
+    //微信登录
     @PostMapping("/wxLogin")
     public CommonReturnType createUser(
             String code,String userHead,String userName,Integer gender
