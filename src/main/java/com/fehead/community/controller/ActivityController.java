@@ -139,7 +139,7 @@ public class ActivityController extends BaseController{
         return CommonReturnType.creat(activityModels);
     }
     //社团管理人删除活动
-    @PostMapping(value = "/delete/activity")
+    @PutMapping(value = "/delete/activity")
     public CommonReturnType deleteActivity(@RequestParam(value = "activityId")Integer activityId,
                                            @RequestParam(value = "userId")Integer userId) throws BusinessException {
         Club club=iClubService.isCreateIdhasCreate(userId);

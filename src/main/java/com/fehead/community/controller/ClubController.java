@@ -19,10 +19,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -107,6 +104,7 @@ public class ClubController extends BaseController{
         methodTest.setChildren(list1);
         return methodTest;
     }
+
     //进入社团首页
     @GetMapping(value = "/get/club/all/info")
     public CommonReturnType getClubAllInfo(@RequestParam(value = "clubId")Integer clubId){
@@ -126,8 +124,8 @@ public class ClubController extends BaseController{
     }
 
     //更改社团信息
-    @PostMapping(value = "/update/club/info")
-    public CommonReturnType upDateClubInfo(Club club) throws BusinessException {
+    @PutMapping(value = "/update/club/info")
+    public CommonReturnType upDateClubInfo(@RequestBody Club club) throws BusinessException {
         club=iClubService.updateClubInfo(club);
         return CommonReturnType.creat(club);
     }
