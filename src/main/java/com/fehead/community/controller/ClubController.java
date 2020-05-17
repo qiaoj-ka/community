@@ -63,7 +63,7 @@ public class ClubController extends BaseController{
     }
 
     //管理社团-简介页面
-    @GetMapping(value = "club/getClub/byCreateId")
+    @GetMapping(value = "/club/getClub/byCreateId")
     public CommonReturnType getClubByCreateId(@RequestParam("userId") Integer id){
         Club club=iClubService.isCreateIdhasCreate(id);
         ClubVO clubVO=transforToVO(club);
@@ -80,7 +80,7 @@ public class ClubController extends BaseController{
 
 
     //社团首页获取所有包含所有类型的
-    @GetMapping(value = "club/demo/allType")
+    @GetMapping(value = "/club/demo/allType")
     public CommonReturnType getAllClub(){
         List<MethodTest> list=new ArrayList<>();
         for (ClubType type:ClubType.values()){
@@ -107,7 +107,7 @@ public class ClubController extends BaseController{
         return methodTest;
     }
     //进入社团首页
-    @GetMapping(value = "get/club/all/info")
+    @GetMapping(value = "/get/club/all/info")
     public CommonReturnType getClubAllInfo(@RequestParam(value = "clubId")Integer clubId){
         List<ActivityModel> activityModels=iActivityService.getAllActivityByClubId(clubId);
         return CommonReturnType.creat(activityModels);
@@ -122,7 +122,7 @@ public class ClubController extends BaseController{
     }
 
     //更改社团信息
-    @PostMapping(value = "update/club/info")
+    @PostMapping(value = "/update/club/info")
     public CommonReturnType upDateClubInfo(Club club) throws BusinessException {
         club=iClubService.updateClubInfo(club);
         return CommonReturnType.creat(club);

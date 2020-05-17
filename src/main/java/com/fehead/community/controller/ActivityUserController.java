@@ -31,7 +31,7 @@ public class ActivityUserController extends BaseController {
         return CommonReturnType.creat("你已经成功加入");
     }
 
-    @DeleteMapping(value = "delete/my/activity")
+    @DeleteMapping(value = "/delete/my/activity")
     public CommonReturnType deleteMyActivity(@RequestParam(value = "userId")Integer userId,
                                              @RequestParam(value = "activityId")Integer activityId) throws BusinessException {
         iActivityUserService.deleteActivity(activityId,userId);

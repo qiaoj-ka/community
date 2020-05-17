@@ -128,7 +128,7 @@ public class ActivityController extends BaseController{
     }
 
     //查找已经参加的活动
-    @GetMapping(value = "get/myActivity")
+    @GetMapping(value = "/get/myActivity")
     public CommonReturnType getMyActivity(@RequestParam(value = "userId")Integer userId,
                                           @RequestParam(value = "state")Integer state) throws BusinessException {
         List<ActivityModel> activityModels=iActivityService.myActivity(userId,state);

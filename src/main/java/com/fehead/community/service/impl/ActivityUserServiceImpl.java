@@ -103,15 +103,13 @@ public class ActivityUserServiceImpl extends ServiceImpl<ActivityUserMapper, Act
         Activity activity=activityMapper.selectOne(queryWrapper);
         Duration duration=Duration.between(LocalDateTime.now(),activity.getActivityEndtime());
         if(duration.toMillis()<0){
-            throw new BusinessException(EmBusinessError.UNKNOWN_ERROR,"活动已经开始，不能删除");
+            throw new BusinessException(EmBusinessError.DATA_DELETE_ERROR,"活动已经开始，不能删除");
         }
-        try {
-            LambdaQueryWrapper<ActivityUser> queryWrapper1=new QueryWrapper().lambda();
-            queryWrapper1.eq(ActivityUser::getActivityId,activity).eq(ActivityUser::getUserId,userId);
-            activityUserMapper.delete(queryWrapper1);
-        }catch (Exception e){
-            log.info("退出活动失败");
-            throw new BusinessException(EmBusinessError.DATA_DELETE_ERROR,"未能删除成功");
+        LambdaQueryWrapper<ActivityUser> queryWrapper1=new QueryWrapper().lambda();
+        queryWrapper1.eq(ActivityUser::getActivityId,activityId).eq(ActivityUser::getUserId,userId);
+        int delete = activityUserMapper.delete(queryWrapper1);
+        if(delete==0){
+            throw new BusinessException(EmBusinessError.DATA_DELETE_ERROR,"未加入活动");
         }
 
     }
