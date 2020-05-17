@@ -18,7 +18,7 @@ import java.util.List;
 public interface IClubService extends IService<Club> {
     public Integer createClub(ClubVO clubVo) throws BusinessException;
     //获取自己所创建的社团
-    public Club isCreateIdhasCreate(Integer createId);
+    public Club isCreateIdhasCreate(Integer createId) throws BusinessException;
     public  List<Club> getClub(String type);
     public Club getClubById(Integer clubId);
     List<Club> getMyClub(Integer userId) throws BusinessException;

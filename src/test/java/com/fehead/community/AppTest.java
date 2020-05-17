@@ -73,6 +73,13 @@ public class AppTest
     private ActivityMapper activityMapper;
 
     @Test
+    public void tttt(){
+        Activity activitie=activityMapper.selectById(1);
+        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MM-DD HH:mm:ss");
+        System.out.println(activitie.getActivityEndtime().toString());
+        //System.out.println(activitie.getActivityEndtime().format(formatter));
+    }
+    @Test
     public void testTime(){
         Activity activitie=activityMapper.selectById(1);
         LocalDateTime dateTime=activitie.getActivityStarttime();

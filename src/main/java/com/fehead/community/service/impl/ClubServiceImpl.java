@@ -74,10 +74,14 @@ public class ClubServiceImpl extends ServiceImpl<ClubMapper, Club> implements IC
 
     //判断该用户是否创建过社团并且返回这个社团的信息
     @Override
-    public Club isCreateIdhasCreate(Integer createId) {
+    public Club isCreateIdhasCreate(Integer createId) throws BusinessException {
         Map<String,Object> cloumMap=new HashMap<>();
         cloumMap.put("club_creater_id",createId);
         List<Club> clubList=clubMapper.selectByMap(cloumMap);
+        if(clubList.size()==0){
+            log.info("没有找到该用户创建的社团");
+            throw new BusinessException(EmBusinessError.DATA_SELECT_ERROR,"没有找到该用户创建的社团");
+        }
         return clubList.get(0);
     }
 

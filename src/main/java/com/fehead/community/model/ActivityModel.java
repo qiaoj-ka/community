@@ -18,7 +18,7 @@ public class ActivityModel {
 
     private String activityCover;
 
-    private Long activityEndtime;
+    private String activityEndtime;
 
     private String userAvatar;
 

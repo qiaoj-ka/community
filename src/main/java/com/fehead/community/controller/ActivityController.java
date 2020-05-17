@@ -4,19 +4,20 @@ package com.fehead.community.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fehead.community.entities.Activity;
+import com.fehead.community.entities.Club;
 import com.fehead.community.error.BusinessException;
+import com.fehead.community.error.EmBusinessError;
 import com.fehead.community.model.ActivityModel;
 import com.fehead.community.response.CommonReturnType;
 import com.fehead.community.service.IActivityService;
 import com.fehead.community.service.IActivityUserService;
+import com.fehead.community.service.IClubService;
 import com.fehead.community.view.ActivityVO;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -45,6 +46,9 @@ public class ActivityController extends BaseController{
     private IActivityService iActivityService;
     @Resource
     private IActivityUserService iActivityUserService;
+
+    @Autowired
+    private IClubService iClubService;
 
     /**
      * 可上传图片、视频，只需在nginx配置中配置可识别的后缀
@@ -134,7 +138,17 @@ public class ActivityController extends BaseController{
         List<ActivityModel> activityModels=iActivityService.myActivity(userId,state);
         return CommonReturnType.creat(activityModels);
     }
-
+    //社团管理人删除活动
+    @PostMapping(value = "/delete/activity")
+    public CommonReturnType deleteActivity(@RequestParam(value = "activityId")Integer activityId,
+                                           @RequestParam(value = "userId")Integer userId) throws BusinessException {
+        Club club=iClubService.isCreateIdhasCreate(userId);
+        if(club==null){
+            throw new BusinessException(EmBusinessError.DATA_SELECT_ERROR,"你没有权限删除活动");
+        }
+        iActivityService.updateState(activityId);
+        return CommonReturnType.creat("删除成功");
+    }
     //测试
     @GetMapping(value = "/hello")
     public String hello(){

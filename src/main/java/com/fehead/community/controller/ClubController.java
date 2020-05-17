@@ -12,6 +12,7 @@ import com.fehead.community.other.ClubType;
 import com.fehead.community.response.CommonReturnType;
 import com.fehead.community.service.IActivityService;
 import com.fehead.community.service.IClubService;
+import com.fehead.community.view.ClubHomePageVO;
 import com.fehead.community.view.ClubVO;
 import com.fehead.community.view.ClubVO1;
 import com.jcraft.jsch.JSchException;
@@ -64,7 +65,7 @@ public class ClubController extends BaseController{
 
     //管理社团-简介页面
     @GetMapping(value = "/club/getClub/byCreateId")
-    public CommonReturnType getClubByCreateId(@RequestParam("userId") Integer id){
+    public CommonReturnType getClubByCreateId(@RequestParam("userId") Integer id) throws BusinessException {
         Club club=iClubService.isCreateIdhasCreate(id);
         ClubVO clubVO=transforToVO(club);
         return CommonReturnType.creat(clubVO);
@@ -72,10 +73,10 @@ public class ClubController extends BaseController{
 
     //获得详情信息
     @GetMapping(value = "/club/getClubInfo")
-    public CommonReturnType getClubInfo(@RequestParam("clubId")Integer clubId){
+    public Club getClubInfo(@RequestParam("clubId")Integer clubId){
 
         Club club=iClubService.getClubById(clubId);
-        return CommonReturnType.creat(club);
+        return club;
     }
 
 
@@ -109,8 +110,11 @@ public class ClubController extends BaseController{
     //进入社团首页
     @GetMapping(value = "/get/club/all/info")
     public CommonReturnType getClubAllInfo(@RequestParam(value = "clubId")Integer clubId){
+        ClubHomePageVO clubHomePageVO=new ClubHomePageVO();
         List<ActivityModel> activityModels=iActivityService.getAllActivityByClubId(clubId);
-        return CommonReturnType.creat(activityModels);
+        clubHomePageVO.setList(activityModels);
+        clubHomePageVO.setClubInfo(getClubInfo(clubId));
+        return CommonReturnType.creat(clubHomePageVO);
     }
 
     //查找该用户所有的社团信息

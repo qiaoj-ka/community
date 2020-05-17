@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -247,6 +248,19 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
 
     }
 
+    @Override
+    public void updateState(Integer activityId) throws BusinessException {
+        LambdaUpdateWrapper<Activity> queryWrapper=new UpdateWrapper().lambda();
+        queryWrapper.eq(Activity::getActivityId,activityId);
+        Activity activity=activityMapper.selectById(activityId);
+        if(activity==null||activity.getActivityStatus()==1){
+            log.info("该活动不存在");
+            throw new BusinessException(EmBusinessError.DATA_SELECT_ERROR,"该活动不存在");
+        }
+        activity.setActivityStatus(1);
+        activityMapper.update(activity,queryWrapper);
+    }
+
     private ActivityVO tansferVO(Activity activity,User user,Club club){
         ActivityVO activityVO=new ActivityVO();
         BeanUtils.copyProperties(activity,activityVO);
@@ -269,7 +283,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         Long timestap=LocalDateTime.now().toInstant(ZoneOffset.of("+8")).getEpochSecond();
         Long time=activity.getActivityStarttime().toInstant(ZoneOffset.of("+8")).getEpochSecond();
         Long endtime=activity.getActivityEndtime().toInstant(ZoneOffset.of("+8")).getEpochSecond();
-        activityModel.setActivityEndtime(endtime);
+        activityModel.setActivityEndtime(activity.getActivityEndtime().toString().substring(0,10));
         if(timestap-endtime>0){
             return null;
         }
