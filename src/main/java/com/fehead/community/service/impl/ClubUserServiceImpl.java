@@ -109,4 +109,12 @@ public class ClubUserServiceImpl extends ServiceImpl<ClubUserMapper, ClubUser> i
             return clubUserMapper.delete(queryWrapper);
         }
     }
+
+    @Override
+    public Integer getNumbers(Integer clubId) {
+        LambdaQueryWrapper<ClubUser> queryWrapper=new QueryWrapper().lambda();
+        queryWrapper.eq(ClubUser::getClubId,clubId);
+        Integer count=clubUserMapper.selectCount(queryWrapper);
+        return count;
+    }
 }

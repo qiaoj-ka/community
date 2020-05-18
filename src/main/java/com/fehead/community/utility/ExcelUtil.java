@@ -57,7 +57,7 @@ public class ExcelUtil {
         //八进制输出流
         response.setContentType("application/octet-stream");
         //设置导出Excel的名称
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName+".xls");
         //刷新缓冲
         response.flushBuffer();
         //workbook将Excel写入到response的输出流中，供页面下载该Excel文件

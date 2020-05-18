@@ -43,7 +43,7 @@ public class ClubUserController extends BaseController{
     }
 
     //管理人员提出社团成员
-    @DeleteMapping(value = "delete/club/mumber")
+    @DeleteMapping(value = "/delete/club/mumber")
     public CommonReturnType deleteClubNumber(@RequestParam(value = "createId")Integer createId,
                                              @RequestParam(value = "clubId")Integer clubId,
                                              @RequestParam(value = "userId")Integer userId) throws BusinessException {

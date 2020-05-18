@@ -25,4 +25,6 @@ public interface IClubUserService extends IService<ClubUser> {
     List<ClubUser> getAllUserByPage(Integer page,Integer clubId) throws BusinessException;
     //退出社团
     Integer quiteClub(Integer userId,Integer clubId) throws BusinessException;
+
+    Integer getNumbers(Integer clubId);
 }

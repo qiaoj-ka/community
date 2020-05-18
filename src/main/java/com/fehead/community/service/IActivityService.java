@@ -38,4 +38,5 @@ public interface IActivityService extends IService<Activity> {
     void addActivity(Integer userId,Integer activityId);
 
     void updateState(Integer activityId) throws BusinessException;
+
 }

@@ -12,6 +12,7 @@ import com.fehead.community.other.ClubType;
 import com.fehead.community.response.CommonReturnType;
 import com.fehead.community.service.IActivityService;
 import com.fehead.community.service.IClubService;
+import com.fehead.community.service.IClubUserService;
 import com.fehead.community.view.ClubHomePageVO;
 import com.fehead.community.view.ClubVO;
 import com.fehead.community.view.ClubVO1;
@@ -41,6 +42,9 @@ public class ClubController extends BaseController{
 
     @Autowired
     private IActivityService iActivityService;
+
+    @Autowired
+    private IClubUserService iClubUserService;
     //创建社团
     @PostMapping(value = "/club/create/club")
     public CommonReturnType createClub(@RequestParam("createId") Integer createId,
@@ -110,6 +114,8 @@ public class ClubController extends BaseController{
     public CommonReturnType getClubAllInfo(@RequestParam(value = "clubId")Integer clubId){
         ClubHomePageVO clubHomePageVO=new ClubHomePageVO();
         List<ActivityModel> activityModels=iActivityService.getAllActivityByClubId(clubId);
+        Integer count=iClubUserService.getNumbers(clubId);
+        clubHomePageVO.setNumbers(count);
         clubHomePageVO.setList(activityModels);
         clubHomePageVO.setClubInfo(getClubInfo(clubId));
         return CommonReturnType.creat(clubHomePageVO);

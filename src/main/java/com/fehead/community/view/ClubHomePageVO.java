@@ -10,4 +10,6 @@ import java.util.List;
 public class ClubHomePageVO {
     private List<ActivityModel> list;
     private Club clubInfo;
+    //社团成员数量
+    private Integer numbers;
 }
