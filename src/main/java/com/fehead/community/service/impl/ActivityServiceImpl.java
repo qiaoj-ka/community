@@ -166,12 +166,14 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
             ActivityModel activityModel=transforActivityToModel(act,user);
             Duration duration=Duration.between(LocalDateTime.now(),act.getActivityEndtime());
             //判断其是否过期，如果过期将数据库字段修改为1 表示删除或者过期
-            if(duration.toMillis()<0&&status==1){
+            if((duration.toMillis()<0&&status==1)){
                 LambdaUpdateWrapper<Activity> updateWrapper=new UpdateWrapper().lambda();
                 updateWrapper.eq(Activity::getActivityId,act.getActivityId());
                 act.setActivityStatus(1);
                 activityMapper.update(act,updateWrapper);
-            }else if(activityModel!=null) {
+            }else if(act.getActivityStatus()==1&&status==1){//表示已经删除的，也不加到
+                log.info("活动已经删除了");
+            } else if(activityModel!=null) {
                 list.add(activityModel);
             }
         }
@@ -219,8 +221,8 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
                 }
             }
             //这里全部返回 不考虑是否过期
-            if(state==0)list=getAcitivityModelList(activities,0);
-            if(state==1)list=getAcitivityModelList(activities1,0);
+            if(state==0)list=getAcitivityModelList(activities,1); //考虑是否过期
+            if(state==1)list=getAcitivityModelList(activities1,1);//考虑是否过期
             if(state==2)list=getAcitivityModelList(activities2,0);
         }catch (Exception e){
             log.info("获取活动失败");
