@@ -114,6 +114,12 @@ public class ClubController extends BaseController{
         clubHomePageVO.setClubInfo(getClubInfo(clubId));
         return CommonReturnType.creat(clubHomePageVO);
     }
+    //通过社团id获取所有该社团的活动
+    @GetMapping(value = "/get/club/activity")
+    public CommonReturnType getClubActivity(@RequestParam(value = "clubId")Integer clubId){
+        List<ActivityModel> activityModels=iActivityService.getAllActivityByClubId(clubId);
+        return CommonReturnType.creat(activityModels);
+    }
 
     //查找该用户所有的社团信息
     @GetMapping(value = "/get/my/club")

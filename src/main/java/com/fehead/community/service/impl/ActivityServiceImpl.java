@@ -37,7 +37,6 @@ import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -210,7 +209,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
             for (ActivityUser a:activityId){
                 Activity activity=activityMapper.selectById(a.getActivityId());
                 Duration duration=Duration.between(LocalDateTime.now(),activity.getActivityEndtime());
-                if(state==0&&duration.toDays()>0){//表示所有未过期的
+                if(state==0&&duration.toMillis()>0){//表示所有未过期的
                     activities.add(activity);
                 }
                 if(state==1&&duration.toDays()<1){//表示所有即将过期的
