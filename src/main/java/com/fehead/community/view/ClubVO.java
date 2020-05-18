@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClubVO {
+public class  ClubVO {
 
     private Integer clubId;
 
@@ -32,5 +32,5 @@ public class ClubVO {
     private Integer clubCreaterId;
 
     private String clubQQ;
-
+    
 }

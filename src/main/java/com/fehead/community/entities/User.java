@@ -45,6 +45,6 @@ public class User implements Serializable {
     private String userOpenid;
 
     private String userAvatar;
-
+    
 
 }
