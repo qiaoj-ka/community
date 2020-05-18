@@ -70,7 +70,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     public void publishNewActivity(Activity activity) throws BusinessException {
         try {
             QueryWrapper<Club> queryWrapper=new QueryWrapper<>();
-            queryWrapper.select("club_createId").eq("club_id",activity.getClubId());
+            queryWrapper.select("club_creater_id").eq("club_id",activity.getClubId());
             Club club=clubMapper.selectOne(queryWrapper);
             if(club.getClubCreaterId()==activity.getActivityCreaterId()){
                 activityMapper.insert(activity);

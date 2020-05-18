@@ -40,7 +40,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-public class ActivityController extends BaseController{
+public class ActivityController {
 
     @Resource
     private IActivityService iActivityService;
@@ -82,7 +82,7 @@ public class ActivityController extends BaseController{
         return map;
     }
 
-    //上传活动
+    //发布活动
     @PostMapping(value = "/publish/activity")
     public CommonReturnType createActivity(@RequestParam(value = "activityName")String activityName,
                                            @RequestParam(value = "activityDescribe")String activityDescribe,
@@ -96,9 +96,10 @@ public class ActivityController extends BaseController{
                                            @RequestParam(value = "clubId")Integer clubId) throws JsonProcessingException, BusinessException, JSchException, SftpException {
         Object result = iActivityService.uploadPicture(activityCover);
         String cover = new ObjectMapper().writeValueAsString(result);
+        String newLogo= cover.replace("\"", "");
         LocalDateTime time1=LocalDateTime.ofEpochSecond(activityStarttime/1000,0, ZoneOffset.ofHours(8));
         LocalDateTime time2=LocalDateTime.ofEpochSecond(activityEndtime/1000,0,ZoneOffset.ofHours(8));
-        Activity activity=new Activity(null,activityName,time1,time2,activityDescribe,activityReward,activityPeople,clubId,0,activityCreaterId,cover,activityPosition);
+        Activity activity=new Activity(null,activityName,time1,time2,activityDescribe,activityReward,activityPeople,clubId,0,activityCreaterId,newLogo,activityPosition);
         iActivityService.publishNewActivity(activity);
         return CommonReturnType.creat("success");
     }
