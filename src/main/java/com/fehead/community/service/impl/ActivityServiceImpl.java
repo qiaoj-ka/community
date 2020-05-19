@@ -284,9 +284,11 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         Duration duration=Duration.between(activity.getActivityStarttime(),LocalDateTime.now());
         if(duration.toMillis()<0){//表示时间还没到
             activityModel.setTime("距离活动开始还有："+duration.toDays()*-1+"天");
+        }else if (duration.toDays()==0){
+            activityModel.setTime("活动今天开始");
         }else if(duration.toDays()>0&&duration.toDays()<30){
             activityModel.setTime(duration.toDays()+"天前");
-        }else {
+        }else if(duration.toDays()>30){
             activityModel.setTime(duration.toDays()/30+"个月前");
         }
         Duration duration1=Duration.between(LocalDateTime.now(),activity.getActivityEndtime());
