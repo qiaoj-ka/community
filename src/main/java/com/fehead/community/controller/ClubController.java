@@ -59,7 +59,7 @@ public class ClubController extends BaseController{
         Object result = iActivityService.uploadPicture(file);
         logo = new ObjectMapper().writeValueAsString(result);
         String newLogo= logo.replace("\"", "");
-        ClubVO clubVO=new ClubVO(null,clubName,clubType,clubDescribe,newLogo,null,clubInstitute,null,createId,clubqq);
+        ClubVO clubVO=new ClubVO(null,clubName,clubType,clubDescribe,newLogo,null,clubInstitute,null,createId,clubqq,0);
         Integer clubId = iClubService.createClub(clubVO);
         return CommonReturnType.creat(clubId);
     }
@@ -69,6 +69,8 @@ public class ClubController extends BaseController{
     public CommonReturnType getClubByCreateId(@RequestParam("userId") Integer id) throws BusinessException {
         Club club=iClubService.isCreateIdhasCreate(id);
         ClubVO clubVO=transforToVO(club);
+        Integer count=iClubUserService.getNumbers(clubVO.getClubId());
+        clubVO.setCount(count);
         return CommonReturnType.creat(clubVO);
     }
 

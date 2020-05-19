@@ -32,5 +32,7 @@ public class  ClubVO {
     private Integer clubCreaterId;
 
     private String clubQQ;
+    //社团参与人数
+    private Integer count;
     
 }
