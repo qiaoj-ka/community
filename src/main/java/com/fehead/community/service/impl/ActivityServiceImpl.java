@@ -281,19 +281,31 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         BeanUtils.copyProperties(activity,activityModel);
         BeanUtils.copyProperties(user,activityModel);
         //计算两者时间差
-        Long timestap=LocalDateTime.now().toInstant(ZoneOffset.of("+8")).getEpochSecond();
-        Long time=activity.getActivityStarttime().toInstant(ZoneOffset.of("+8")).getEpochSecond();
-        Long endtime=activity.getActivityEndtime().toInstant(ZoneOffset.of("+8")).getEpochSecond();
-        activityModel.setActivityEndtime(activity.getActivityEndtime().toString().substring(0,10));
-        if(timestap-endtime>0){
-            return null;
-        }
-        Long cha=(timestap-time)/(60*60*24);
-        if(cha/30>0){
-            activityModel.setTime((cha/30)+"个月前");
+        Duration duration=Duration.between(activity.getActivityStarttime(),LocalDateTime.now());
+        if(duration.toMillis()<0){//表示时间还没到
+            activityModel.setTime("距离活动开始还有："+duration.toDays()*-1+"天");
+        }else if(duration.toDays()>0&&duration.toDays()<30){
+            activityModel.setTime(duration.toDays()+"天前");
         }else {
-            activityModel.setTime((timestap-time)/(60*60*24)+"天前");
+            activityModel.setTime(duration.toDays()/30+"个月前");
         }
+        Duration duration1=Duration.between(LocalDateTime.now(),activity.getActivityEndtime());
+        if(duration1.toMillis()<0){
+            activityModel.setTime("活动已经结束");
+        }
+//        Long timestap=LocalDateTime.now().toInstant(ZoneOffset.of("+8")).getEpochSecond();
+//        Long time=activity.getActivityStarttime().toInstant(ZoneOffset.of("+8")).getEpochSecond();
+//        Long endtime=activity.getActivityEndtime().toInstant(ZoneOffset.of("+8")).getEpochSecond();
+//        activityModel.setActivityEndtime(activity.getActivityEndtime().toString().substring(0,10));
+//        if(timestap-endtime>0){
+//            return null;
+//        }
+//        Long cha=(timestap-time)/(60*60*24);
+//        if(cha/30>0){
+//            activityModel.setTime((cha/30)+"个月前");
+//        }else {
+//            activityModel.setTime((timestap-time)/(60*60*24)+"天前");
+//        }
         //获取hot值
         String hotkey=activity.getActivityId()+"hot";
         if(!redisUtil.hasKey(hotkey)){
