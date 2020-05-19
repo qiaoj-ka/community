@@ -28,6 +28,7 @@ import javax.annotation.Resource;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -118,6 +119,7 @@ public class UserController extends BaseController{
         List<ActivityUser> list=iActivityUserService.getActivityUser(activityId);
         List<UserVO1> userVO1s=getAllUser(list);
         List<List<String>> users=getUserStringList(userVO1s);
+        fileName=URLEncoder.encode(fileName,"UTF-8");
         excelUtil.exportExcel(response,header,users,sheetName,fileName,15);
     }
    //通过所有参与活动的id获取用户
@@ -142,6 +144,7 @@ public class UserController extends BaseController{
         //获取所有成员信息list,并进行包装
         List<UserVO1> list=getAllUser(clubId);
         List<List<String>> users=getUserStringList(list);
+        fileName=URLEncoder.encode(fileName,"UTF-8");
         excelUtil.exportExcel(response,header,users,sheetName,fileName,15);
     }
     //对于获取成员进行包装
