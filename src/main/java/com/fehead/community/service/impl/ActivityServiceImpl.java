@@ -120,7 +120,8 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
             activityVO=tansferVO(activity,user,club);
             String hotkey=activity.getActivityId()+"hot";
             if(!redisUtil.hasKey(hotkey)){
-                redisUtil.set(hotkey,1);
+                redisUtil.set(hotkey,0);
+                activityVO.setHot(0);
             }else {
                 redisUtil.incr(hotkey,1);
                 activityVO.setHot(Integer.parseInt(redisUtil.get(hotkey).toString()));
@@ -312,6 +313,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         String hotkey=activity.getActivityId()+"hot";
         if(!redisUtil.hasKey(hotkey)){
             redisUtil.set(hotkey,0);
+            activityModel.setHot(0);
         }else {
             activityModel.setHot(Integer.parseInt(redisUtil.get(hotkey).toString()));
         }
