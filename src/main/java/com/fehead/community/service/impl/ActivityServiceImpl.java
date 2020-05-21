@@ -139,7 +139,8 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         List<ActivityModel> list=new ArrayList<>();
         try {
             QueryWrapper queryWrapper1=new QueryWrapper();
-            queryWrapper1.select("*").ne("activity_status",1);
+            queryWrapper1.select("*").orderByDesc("activity_id");
+            queryWrapper1.ne("activity_status",1);
             Page<Activity> page1=new Page<>(page,1);
             IPage<Activity> iPage= activityMapper.selectPage(page1,queryWrapper1);
             List<Activity> activities=iPage.getRecords();
@@ -187,6 +188,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         try {
              LambdaQueryWrapper<Activity> queryWrapper=new QueryWrapper().lambda();
              queryWrapper.like(Activity::getActivityName,name);
+             queryWrapper.orderByDesc(Activity::getActivityId);
              List<Activity> activities=activityMapper.selectList(queryWrapper);
              //获取未过期的活动列表
              list=getAcitivityModelList(activities,1);
@@ -203,7 +205,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         try {
             List<ActivityUser> activityId=new ArrayList<>();
             LambdaQueryWrapper<ActivityUser> queryWrapper=new QueryWrapper().lambda();
-            queryWrapper.eq(ActivityUser::getUserId,userId);
+            queryWrapper.eq(ActivityUser::getUserId,userId).orderByDesc(ActivityUser::getActivityId);
             activityId=activityUserMapper.selectList(queryWrapper);
 
             List<Activity> activities=new ArrayList<>();
@@ -237,7 +239,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     public List<ActivityModel> getAllActivityByClubId(Integer clubId) {
         //通过clubId查找该社团下的所有活动
         LambdaQueryWrapper<Activity> queryWrapper=new QueryWrapper().lambda();
-        queryWrapper.eq(Activity::getClubId,clubId);
+        queryWrapper.eq(Activity::getClubId,clubId).orderByDesc(Activity::getActivityId);
         List<Activity> activities=activityMapper.selectList(queryWrapper);
         //现实未过期的所有活动
         List<ActivityModel> activityModels=getAcitivityModelList(activities,1);
