@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,10 +122,10 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
             String hotkey=activity.getActivityId()+"hot";
             if(!redisUtil.hasKey(hotkey)){
                 redisUtil.set(hotkey,0);
-                activityVO.setHot(0);
+                activityVO.setHot("0");
             }else {
                 redisUtil.incr(hotkey,1);
-                activityVO.setHot(Integer.parseInt(redisUtil.get(hotkey).toString()));
+                activityVO.setHot(redisUtil.get(hotkey).toString());
             }
         }catch (Exception e){
             log.info("活动获取失败");
@@ -283,41 +284,57 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         ActivityModel activityModel=new ActivityModel();
         BeanUtils.copyProperties(activity,activityModel);
         BeanUtils.copyProperties(user,activityModel);
-        //计算两者时间差
-        Duration duration=Duration.between(activity.getActivityStarttime(),LocalDateTime.now());
-        if(duration.toMillis()<0){//表示时间还没到
-            activityModel.setTime("距离活动开始还有："+duration.toDays()*-1+"天");
-        }else if (duration.toDays()==0){
+//        //计算两者时间差
+//        Duration duration=Duration.between(activity.getActivityStarttime(),LocalDateTime.now());
+//        //当天的零点
+//        LocalDateTime minTime=LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN);
+//        Duration duration2=Duration.between(minTime,activity.getActivityStarttime());
+//        if(duration2.toMinutes()>0){
+//            activityModel.setTime("活动今天开始");
+//        }else if(duration.toMillis()<0){//表示时间还没到
+//            activityModel.setTime("距离活动开始还有："+duration.toDays()*-1+"天");
+//        }else if (duration.toDays()==0){
+//            activityModel.setTime("活动今天开始");
+//        }else if(duration.toDays()>0&&duration.toDays()<30){
+//            activityModel.setTime(duration.toDays()+"天前");
+//        }else if(duration.toDays()>30){
+//            activityModel.setTime(duration.toDays()/30+"个月前");
+//        }
+        //活动开始的当天0点
+        LocalDateTime minTime=LocalDateTime.of(activity.getActivityStarttime().toLocalDate(), LocalTime.MIN);
+        //现在的时间
+        LocalDateTime now=LocalDateTime.now();
+        //现在时间的0.00
+        LocalDateTime nowMin=LocalDateTime.of(now.toLocalDate(), LocalTime.MIN);
+        //表示活动0.00与开始时间做比较
+        Duration duration2=Duration.between(minTime,now);
+        //活动开始0.00和当现在0点
+        Duration duration4=Duration.between(nowMin,minTime);
+        //活动今天开始
+        if(duration2.toMinutes()>0&&duration4.toDays()==0){
             activityModel.setTime("活动今天开始");
-        }else if(duration.toDays()>0&&duration.toDays()<30){
-            activityModel.setTime(duration.toDays()+"天前");
-        }else if(duration.toDays()>30){
-            activityModel.setTime(duration.toDays()/30+"个月前");
+            //System.out.println("活动今天开始");
+        }else if(duration4.toDays()<0){//表示时间还没到
+            activityModel.setTime(duration4.toDays()*-1+"天前");
+            //System.out.println(duration4.toDays()*-1+"天前");
+        }else if(duration4.toDays()>0&&duration4.toDays()<30){
+            activityModel.setTime("距离活动开始还有："+duration4.toDays()+"天");
+           // System.out.println("距离活动开始还有："+duration4.toDays()+"天");
+        }else if(duration4.toDays()>30){
+           // System.out.println(duration4.toDays()/30+"个月前");
+            activityModel.setTime(duration4.toDays()/30+"个月前");
         }
         Duration duration1=Duration.between(LocalDateTime.now(),activity.getActivityEndtime());
         if(duration1.toMillis()<0){
             activityModel.setTime("活动已经结束");
         }
-//        Long timestap=LocalDateTime.now().toInstant(ZoneOffset.of("+8")).getEpochSecond();
-//        Long time=activity.getActivityStarttime().toInstant(ZoneOffset.of("+8")).getEpochSecond();
-//        Long endtime=activity.getActivityEndtime().toInstant(ZoneOffset.of("+8")).getEpochSecond();
-//        activityModel.setActivityEndtime(activity.getActivityEndtime().toString().substring(0,10));
-//        if(timestap-endtime>0){
-//            return null;
-//        }
-//        Long cha=(timestap-time)/(60*60*24);
-//        if(cha/30>0){
-//            activityModel.setTime((cha/30)+"个月前");
-//        }else {
-//            activityModel.setTime((timestap-time)/(60*60*24)+"天前");
-//        }
         //获取hot值
         String hotkey=activity.getActivityId()+"hot";
         if(!redisUtil.hasKey(hotkey)){
             redisUtil.set(hotkey,0);
-            activityModel.setHot(0);
+            activityModel.setHot("0");
         }else {
-            activityModel.setHot(Integer.parseInt(redisUtil.get(hotkey).toString()));
+            activityModel.setHot(redisUtil.get(hotkey).toString());
         }
         return activityModel;
     }

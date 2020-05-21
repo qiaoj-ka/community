@@ -26,7 +26,7 @@ public class ActivityModel {
 
     private String time;
 
-    private Integer hot;
+    private String hot;
 
     private Integer activityPeople;
 

@@ -10,10 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
@@ -144,6 +141,31 @@ public class AppTest
             redisUtil.incr(hotkey,1);
         }
         System.out.println(redisUtil.get(hotkey));
+    }
+
+    @Test
+    public void hello1(){
+        Activity activity=activityMapper.selectById(24);
+        //活动开始的当天0点
+        LocalDateTime minTime=LocalDateTime.of(activity.getActivityStarttime().toLocalDate(), LocalTime.MIN);
+        //现在的时间
+        LocalDateTime now=LocalDateTime.now();
+        //现在时间的0.00
+        LocalDateTime nowMin=LocalDateTime.of(now.toLocalDate(), LocalTime.MIN);
+        //表示活动0.00与开始时间做比较
+        Duration duration2=Duration.between(minTime,now);
+        //活动开始0.00和当现在0点
+        Duration duration4=Duration.between(nowMin,minTime);
+        //活动今天开始
+        if(duration2.toMinutes()>0&&duration4.toDays()==0){
+            System.out.println("活动今天开始");
+        }else if(duration4.toDays()<0){//表示时间还没到
+            System.out.println(duration4.toDays()*-1+"天前");
+        }else if(duration4.toDays()>0&&duration4.toDays()<30){
+            System.out.println("距离活动开始还有："+duration4.toDays()+"天");
+        }else if(duration4.toDays()>30){
+            System.out.println(duration4.toDays()/30+"个月前");
+        }
     }
 
 }
