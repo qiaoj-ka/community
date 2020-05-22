@@ -46,7 +46,7 @@ public class ActivityVO {
     //活动社团名称
     private String clubName;
     //活动热度
-    private Integer hot;
+    private String hot;
     //判断这个人是否参加过该活动
     private boolean isAdd;
 
