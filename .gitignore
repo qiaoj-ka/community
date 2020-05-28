@@ -1,0 +1,15 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+*.yml
+.gitignore
+.idea/community.iml
+.idea/httpRequests/
+.idea/libraries/
+.idea/modules.xml
+.idea/vcs.xml
+community.git/
+git
+target/classes/com/fehead/community/other/Constants.class
+target/generated-sources/
+target/generated-test-sources/
+zh-CN/
