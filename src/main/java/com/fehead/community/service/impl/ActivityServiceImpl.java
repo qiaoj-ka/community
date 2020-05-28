@@ -142,7 +142,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
             QueryWrapper queryWrapper1=new QueryWrapper();
             queryWrapper1.select("*").orderByDesc("activity_id");
             queryWrapper1.ne("activity_status",1);
-            Page<Activity> page1=new Page<>(page,6);
+            Page<Activity> page1=new Page<>(page,5);
             IPage<Activity> iPage= activityMapper.selectPage(page1,queryWrapper1);
             List<Activity> activities=iPage.getRecords();
             //需要判断是否过期，只返回不过期的

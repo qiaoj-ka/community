@@ -4,7 +4,6 @@ package com.fehead.community.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fehead.community.entities.ActivityUser;
-import com.fehead.community.entities.Club;
 import com.fehead.community.entities.ClubUser;
 import com.fehead.community.entities.User;
 import com.fehead.community.error.BusinessException;
@@ -15,17 +14,14 @@ import com.fehead.community.service.IClubUserService;
 import com.fehead.community.service.IUserService;
 import com.fehead.community.utility.ExcelUtil;
 import com.fehead.community.utility.HttpClientUtil;
-import com.fehead.community.view.ClubVO1;
 import com.fehead.community.view.UserVO;
 import com.fehead.community.view.UserVO1;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -147,6 +143,7 @@ public class UserController extends BaseController{
         fileName=URLEncoder.encode(fileName,"UTF-8");
         excelUtil.exportExcel(response,header,users,sheetName,fileName,15);
     }
+
     //对于获取成员进行包装
     private List<List<String>> getUserStringList(List<UserVO1> list){
         List<List<String>> lists=new ArrayList<>();
