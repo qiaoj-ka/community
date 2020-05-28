@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
@@ -118,6 +119,7 @@ public class ActivityController {
             activityVO.setAdd(false);
         }
         return CommonReturnType.creat(activityVO);
+
     }
     //分页获取活动(简介)
     @GetMapping(value = "/get/activity/byPage")

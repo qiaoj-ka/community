@@ -28,6 +28,7 @@ public class ActivityModel {
 
     private String hot;
 
+    //活动总人数
     private Integer activityPeople;
 
 

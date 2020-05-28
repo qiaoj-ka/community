@@ -1,10 +1,10 @@
 package com.fehead.community.utility;
 
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.Collections;
@@ -15,6 +15,8 @@ public class RedisUtil {
 
     @Resource
     private RedisTemplate redisTemplate;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
 
     //===============commom======================
@@ -43,7 +45,7 @@ public class RedisUtil {
      */
     public boolean hasKey(String key){
         try {
-            return redisTemplate.hasKey(key);
+            return stringRedisTemplate.hasKey(key);
         }catch (Exception e){
             e.printStackTrace();
             return false;
@@ -82,7 +84,7 @@ public class RedisUtil {
      * @return
      */
     public Object get(String key){
-        return key==null?null:redisTemplate.opsForValue().get(key);
+        return key==null?null:stringRedisTemplate.opsForValue().get(key);
     }
 
     /**
@@ -93,7 +95,7 @@ public class RedisUtil {
      */
     public boolean set(String key,Object value){
         try {
-            redisTemplate.opsForValue().set(key,value);
+            stringRedisTemplate.opsForValue().set(key,value.toString());
             return true;
         }catch (Exception e){
             e.printStackTrace();
@@ -110,7 +112,7 @@ public class RedisUtil {
     public boolean set(String key,Object value,long time){
         try {
             if(time>0){
-                redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
+                stringRedisTemplate.opsForValue().set(key, value.toString(), time, TimeUnit.SECONDS);
             }else{
                 set(key, value);
             }
@@ -147,7 +149,9 @@ public class RedisUtil {
         if(delta<0){
             throw new RuntimeException("递减因子必须大于0");
         }
-        return redisTemplate.opsForValue().increment(key, -delta);
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        return redisTemplate.opsForValue().decrement(key,delta);
     }
 
 }

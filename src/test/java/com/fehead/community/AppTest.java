@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
@@ -42,17 +44,29 @@ public class AppTest
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
     @Test
     public void setRedisKey(){
-        redisUtil.set("test",1);
+        redisUtil.set("test",15);
+        //stringRedisTemplate.opsForValue().set("test","15");
+        System.out.println(redisUtil.get("test"));
         for (int i=0;i<10;i++){
             if(redisUtil.hasKey("test")){
-                redisUtil.incr("test",1);
+                redisUtil.decr("test",1);
             }
-            System.out.println(redisUtil.get("test"));
+            System.out.print(redisUtil.get("test")+"->");
         }
-        Object result=redisUtil.get("test");
-        System.out.println(result.toString());
+        System.out.println();
+        stringRedisTemplate.opsForValue().set("jiajia","17");
+        System.out.println(stringRedisTemplate.opsForValue().get("jiajia"));
+        for (int i = 0; i <3 ; i++) {
+            Long num=stringRedisTemplate.opsForValue().decrement("jiajia");
+            System.out.print("num:"+num+"->");
+            System.out.println("value:"+stringRedisTemplate.opsForValue().get("jiajia"));
+        }
+
     }
     @Test
     public void getToday(){
@@ -166,6 +180,18 @@ public class AppTest
         }else if(duration4.toDays()>30){
             System.out.println(duration4.toDays()/30+"个月前");
         }
+    }
+
+    @Test
+    public void getLong(){
+        Long timestamp=LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        String dateTimeStr = "2018-07-28 14:11:15";
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, df);
+        Long endtime=dateTime.toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        System.out.println(timestamp);
+        System.out.println(endtime);
+
     }
 
 }
